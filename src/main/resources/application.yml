@@ -1,0 +1,25 @@
+# spring.application.name=vuestagram
+spring:
+  application:
+    name: vuestagram
+
+  # MariaDB 설정
+  datasource:
+    url: jdbc:mariadb://localhost:3306/vuestagram
+    username: root
+    password: 123123
+    driver-class-name: org.mariadb.jdbc.Driver
+
+# yml은 카멜이 적용안됨
+config:
+  jwt:
+    issuer: lasjak@red.com
+    type: JWT
+    access-token-expiry: 10000
+    refresh-token-expiry: 1296000000
+    refresh-token-cookie-name: refresh-token
+    refresh-token-cookie-expiry: 1296000
+    secret: 34h6baw46bw4tvgw4tgabwz34htbw4szybhe34ybh34tgv23a4tgv3w
+    header-key: Authorization
+    scheme: Bearer
+    reiss-uri: /api/reissue-token
