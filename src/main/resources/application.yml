@@ -23,3 +23,10 @@ config:
     header-key: Authorization
     scheme: Bearer
     reiss-uri: /api/reissue-token
+
+# Sjf4j 설정
+logging:
+  file:
+    name: classpath:logs/app.log
+  level:
+    root: info

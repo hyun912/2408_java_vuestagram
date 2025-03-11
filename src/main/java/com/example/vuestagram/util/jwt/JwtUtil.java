@@ -2,10 +2,12 @@ package com.example.vuestagram.util.jwt;
 
 import com.example.vuestagram.model.User;
 import com.example.vuestagram.util.jwt.config.JwtConfig;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -45,7 +47,29 @@ public class JwtUtil {
 						.setIssuer(jwtConfig.getIssuer())
 						.setIssuedAt(now)
 						.setExpiration(new Date(now.getTime() + expiry))
-						.signWith(secretKey)
+						.signWith(this.secretKey)
 						.compact();
+	}
+
+	// 페이로드(Claims) 추출 및 토큰 검증
+	public Claims getClaims(String token) {
+		return Jwts.parser() // 객체 생성
+						.verifyWith(this.secretKey) // 비밀키 설정
+						.build() // 빌드
+						.parseSignedClaims(token) // JWT 검증
+						.getPayload(); // 페이로드 반환
+	}
+
+	// 쿠키에서 액세스 토큰 획득
+	public String getAccessTokenInCookie(HttpServletRequest request) {
+		// Request header에서 BearerToken 획득
+		String bearerToken = request.getHeader(jwtConfig.getHeaderKey());
+		
+		// 토큰 존재 여부 체크 & 시작이 "Bearer "인지 체크
+		if(bearerToken == null || !bearerToken.startsWith(jwtConfig.getScheme())) {
+			return null;
+		}
+
+		return bearerToken.substring(jwtConfig.getScheme().length() + 1);
 	}
 }

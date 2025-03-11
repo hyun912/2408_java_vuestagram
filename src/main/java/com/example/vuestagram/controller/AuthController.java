@@ -1,12 +1,11 @@
 package com.example.vuestagram.controller;
 
+import com.example.vuestagram.dto.request.LoginRequestDTO;
 import com.example.vuestagram.service.AuthService;
 import com.example.vuestagram.util.jwt.config.JwtConfig;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController // 레스트풀 API 컨트롤러
 @RequestMapping("/api") // 공통 경로 설정
@@ -15,8 +14,10 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/login")
-	public String login() {
-		return authService.login();
+	public String login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+		// return authService.login();
+
+		return loginRequestDTO.getAccount() + ":" + loginRequestDTO.getPassword();
 	}
 
 	@GetMapping("/test")
