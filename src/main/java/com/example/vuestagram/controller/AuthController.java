@@ -15,9 +15,8 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public String login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-		// return authService.login();
-
-		return loginRequestDTO.getAccount() + ":" + loginRequestDTO.getPassword();
+		// return loginRequestDTO.getAccount() + ":" + loginRequestDTO.getPassword();
+		return authService.login(loginRequestDTO);
 	}
 
 	@GetMapping("/test")

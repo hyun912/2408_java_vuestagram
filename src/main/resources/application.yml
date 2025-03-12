@@ -10,6 +10,21 @@ spring:
     password: 123123
     driver-class-name: org.mariadb.jdbc.Driver
 
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: none # none 이외는 내장서버 시작/종료시 DB 초기화됨
+    show-sql: true # 테스트서버 true, 런칭서버 false
+    properties:
+      hibernate:
+        format_sql: true # 기본 포맷팅 여부
+    defer-datasource-initialization: false # 레코드 데이터 백업 여부
+  sql:
+    init:
+      data-locations: classpath*:db/data.sql
+      mode: never
+      platform: all
+
 # yml은 카멜이 적용안됨
 config:
   jwt:
