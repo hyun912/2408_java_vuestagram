@@ -30,7 +30,7 @@ config:
   jwt:
     issuer: lasjak@red.com
     type: JWT
-    access-token-expiry: 10000
+    access-token-expiry: 1000000
     refresh-token-expiry: 1296000000
     refresh-token-cookie-name: refresh-token
     refresh-token-cookie-expiry: 1296000

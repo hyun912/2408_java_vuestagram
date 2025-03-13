@@ -1,6 +1,5 @@
 package com.example.vuestagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,34 +19,28 @@ import java.time.LocalDateTime;
 @Entity
 @EnableJpaAuditing
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET updated_at = NOW(), deleted_at = NOW() WHERE user_id = ?")
+@Table(name = "boards")
+@SQLDelete(sql = "UPDATE boards SET updated_at = NOW(), deleted_at = NOW() WHERE board_id = ?")
 @Where(clause = "deleted_at IS NULL")
-public class User {
+public class Board {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
-	private Long userId;
+	@Column(name = "board_id")
+	private Long boardId;
 
-	@Column(name = "account", unique = true, nullable = false, length = 20)
-	private String account;
+	// 끝이 one이면 EAGER, many이면 LAZY가 디폴트
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@JsonIgnore // 중요 개인정보는 제외하고 시리얼 라이즈
-	@Column(name = "password", nullable = false, length = 255)
-	private String password;
+	@Column(name = "content", nullable = false, length = 200)
+	private String content;
 
-	@Column(name = "`name`", nullable = false, length = 20)
-	private String name;
+	@Column(name = "img", nullable = false, length = 100)
+	private String img;
 
-	@Column(name = "profile", length = 100)
-	private String profile;
-
-	@Column(name = "gender", nullable = false)
-	private String gender;
-
-	@JsonIgnore
-	@Column(name = "refresh_token", length = 512)
-	private String refreshToken;
+	@Column(name = "`like`", nullable = false, length = 11)
+	private int like;
 
 	@CreatedDate
 	@Column(name = "created_at")
