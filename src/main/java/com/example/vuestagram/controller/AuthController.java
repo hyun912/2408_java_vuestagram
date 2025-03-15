@@ -8,29 +8,35 @@ import com.example.vuestagram.util.jwt.config.JwtConfig;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController // 레스트풀 API 컨트롤러
-@RequestMapping // 공통 경로 설정
-@RequiredArgsConstructor // 자동 DI
+@RestController // REST API 컨트롤러
+@RequestMapping
+@RequiredArgsConstructor
 public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/login")
-	public ResponseEntity<ResponseBase<ResponseLogin>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO, HttpServletResponse response) {
+	public ResponseEntity<ResponseBase<ResponseLogin>> login(
+		HttpServletResponse response
+		,@Valid @RequestBody LoginRequestDTO loginRequestDTO
+	) {
 		ResponseLogin responseLogin = authService.login(loginRequestDTO, response);
-		ResponseBase<ResponseLogin> responseBase = ResponseBase.<ResponseLogin>builder()
-						.message("로그인 성공")
-						.data(responseLogin)
-						.status(200)
-						.build();
+
+		ResponseBase<ResponseLogin> responseBase =
+			ResponseBase.<ResponseLogin>builder()
+				.status(200)
+				.message("로그인 성공")
+				.data(responseLogin)
+				.build();
 
 		return ResponseEntity.status(200).body(responseBase);
 	}
 
 	@GetMapping("/test")
 	public String test() {
-		return "test method";
+		return "test";
 	}
 }

@@ -28,36 +28,30 @@ public class AuthService {
 
 		// 유저 존재 여부 체크
 		if(result.isEmpty()) {
-			throw new RuntimeException("존재하지 않는 유저.");
+			throw new RuntimeException("존재하지 않는 유저입니다.");
 		}
 
-		// 비밀번호 체크, 파라미터: 암호화 X 번호, 암호화 O 번호
+		// 비밀번호 체크
 		if(!(passwordEncoder.matches(loginRequestDTO.getPassword(), result.get().getPassword()))) {
 			throw new RuntimeException("비밀번호가 틀렸습니다.");
 		}
 
-		User user = result.get();
-
 		// 토큰 생성
-		String accessToken = jwtUtil.generateAccessToken(user);
-		String refreshToken = jwtUtil.generateRefreshToken(user);
+		String accessToken = jwtUtil.generateAccessToken(result.get());
+		String refreshToken = jwtUtil.generateRefreshToken(result.get());
 
 		// 리프래시 토큰 쿠키에 저장
 		cookieUtil.setCookie(
-			response
-			,jwtConfig.getRefreshTokenCookieName()
-			,refreshToken
-			,jwtConfig.getRefreshTokenCookieExpiry()
-			,jwtConfig.getReissUri()
+						response
+						,jwtConfig.getRefreshTokenCookieName()
+						,refreshToken
+						,jwtConfig.getRefreshTokenCookieExpiry()
+						,jwtConfig.getReissUri()
 		);
 
 		return ResponseLogin.builder()
 						.accessToken(accessToken)
-						.userId(user.getUserId())
-						.name(user.getName())
-						.account(user.getAccount())
-						.profile(user.getProfile())
-						.build()
-						;
+						.user(result.get())
+						.build();
 	}
 }

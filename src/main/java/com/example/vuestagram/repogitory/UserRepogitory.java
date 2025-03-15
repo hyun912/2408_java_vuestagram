@@ -1,5 +1,6 @@
 package com.example.vuestagram.repogitory;
 
+
 import com.example.vuestagram.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

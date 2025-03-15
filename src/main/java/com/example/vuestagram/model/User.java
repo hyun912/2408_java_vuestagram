@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @EnableJpaAuditing
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET updated_at = NOW(), deleted_at = NOW() WHERE user_id = ?")
+@SQLDelete(sql = "UPDATE users SET updated_at = NOW(), delted_at = NOW() WHERE user_id = ?")
 @Where(clause = "deleted_at IS NULL")
 public class User {
 	@Id
@@ -32,7 +32,7 @@ public class User {
 	@Column(name = "account", unique = true, nullable = false, length = 20)
 	private String account;
 
-	@JsonIgnore // 중요 개인정보는 제외하고 시리얼 라이즈
+	@JsonIgnore
 	@Column(name = "password", nullable = false, length = 255)
 	private String password;
 
@@ -42,7 +42,7 @@ public class User {
 	@Column(name = "profile", length = 100)
 	private String profile;
 
-	@Column(name = "gender", nullable = false)
+	@Column(name = "gender", nullable = false, length = 1)
 	private String gender;
 
 	@JsonIgnore

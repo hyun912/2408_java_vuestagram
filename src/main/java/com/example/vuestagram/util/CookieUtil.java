@@ -10,24 +10,24 @@ import java.util.Optional;
 
 @Component
 public class CookieUtil {
-	// Request Header에서 특정 쿠키 획득
+	// Request Header에서 특정 쿠키를 획득하는 메소드
 	public Cookie getCookie(HttpServletRequest request, String name) {
-		// 쿠키가 없는 경우도 있으므로 null을 허용하는 쿠키를 스트림객체로 받아옴
-		return Arrays.stream(Optional
-						.ofNullable(request.getCookies())
-						.orElseThrow(() -> new RuntimeException("쿠키를 찾을 수 엄숴.")) // catch
+		// 쿠키가 없는 경우도 있으므로
+		// Optional.ofNullable 메소드를 사용해서, null을 가질 수 있는 Optional 생성
+		return Arrays.stream(Optional.ofNullable(request.getCookies())
+										.orElseThrow(() -> new RuntimeException("쿠키를 찾을 수 없다."))
 						) // Stream<Cookie[]> 생성
-						.filter(item -> item.getName().equals(name)) // 조건에 맞는 Stream 리턴 (중간 연산)
-						.findFirst() // 필터된 아이템중 가장 위에걸 가져옴 (Optional 타입, 최종 연산)
-						.orElseThrow(() -> new RuntimeException("쿠키를 찾을수 엄숴요."));
+						.filter(item -> item.getName().equals(name)) // 필터 조건에 맞느 Stream을 리턴 (중간 연산)
+						.findFirst() // 필터 조건에 맞는 첫번째 아이템을 선택해서 Optional로 리턴 (최종 연산)
+						.orElseThrow(() -> new RuntimeException("쿠키를 찾을 수 없다."));
 	}
 
-	// Response Header 쿠키 세팅
-	public void setCookie(HttpServletResponse response, String name, String value, int expiry, String domain) {
+	// Reponse Header에 쿠키 설정 메소드
+	public void setCookie(HttpServletResponse response, String name, String value, int maxAge, String domain) {
 		Cookie cookie = new Cookie(name, value);
-		cookie.setPath(domain); // 특정 요청만 쿠키 발급
-		cookie.setMaxAge(expiry); // 만료 시간
-		cookie.setHttpOnly(true); // 보안 쿠키 설정, 프론트에서 js 쿠키 획득 불가능
+		cookie.setPath(domain); // 특정 요청으로 들어올 때만 쿠키를 넘겨주도록 설정
+		cookie.setMaxAge(maxAge); // 만료 시간 설정
+		cookie.setHttpOnly(true); // 보안 쿠키 설정, 프론트에서 js 쿠키 획득이 불가능
 		response.addCookie(cookie);
 	}
 }

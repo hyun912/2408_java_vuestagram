@@ -1,9 +1,11 @@
 package com.example.vuestagram.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,7 +22,7 @@ import java.time.LocalDateTime;
 @EnableJpaAuditing
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "boards")
-@SQLDelete(sql = "UPDATE boards SET updated_at = NOW(), deleted_at = NOW() WHERE board_id = ?")
+@SQLDelete(sql = "UPDATE boards SET updated_at = NOW(), delted_at = NOW() WHERE board_id = ?")
 @Where(clause = "deleted_at IS NULL")
 public class Board {
 	@Id
@@ -28,7 +30,6 @@ public class Board {
 	@Column(name = "board_id")
 	private Long boardId;
 
-	// 끝이 one이면 EAGER, many이면 LAZY가 디폴트
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;

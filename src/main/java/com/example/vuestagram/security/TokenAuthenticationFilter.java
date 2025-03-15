@@ -1,5 +1,6 @@
 package com.example.vuestagram.security;
 
+
 import com.example.vuestagram.util.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,21 +20,20 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	private final SecurityAuthenticationProvider securityAuthenticationProvider;
 
 	@Override
-	// 액세스 토큰 유효 여부 확인하고 인증 정보를 스프링 시큐리티에 세팅
+	// 엑세스 토큰의 유효 여부를 확인하고 인증 정보를 스프링 시큐리티에 설정하는 메소드
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		// 쿠키에서 토큰 획득
 		String token = jwtUtil.getAccessTokenInCookie(request);
 
-		if(token != null) {
-			try{
-				// Security 인증 세팅
+		if (token != null) {
+			try {
+				// Security 인증 정보 설정
 				SecurityContextHolder.getContext().setAuthentication(securityAuthenticationProvider.authenticate(token));
-			}catch (Exception e) {
-				throw new RuntimeException("사용 못하는 토큰이양");
+			} catch(Exception e) {
+				throw new RuntimeException("사용할 수 없는 토큰");
 			}
 		}
 
-		filterChain.doFilter(request, response);
+		filterChain.doFilter(request, response); // 다음 필터 호출
 	}
-
 }
