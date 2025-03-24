@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @ConfigurationPropertiesScan
 @EnableJpaAuditing
 public class VuestagramApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(VuestagramApplication.class, args);
 	}

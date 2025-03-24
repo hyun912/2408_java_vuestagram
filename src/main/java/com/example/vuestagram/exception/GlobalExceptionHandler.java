@@ -5,7 +5,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	@ExceptionHandler(ExpiredJwtException.class)
-	public ResponseEntity<ResponseBase> handleExpiredJwtException(ExpiredJwtException e) {
+	public ResponseEntity<ResponseBase<String>> handleExpiredJwtException(ExpiredJwtException e) {
 		log.error("JWT 토큰이 만료되었습니다." + e.getMessage());
 
 		ResponseBase<String> result = ResponseBase.<String>builder()
@@ -32,7 +34,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(SignatureException.class)
-	public ResponseEntity<ResponseBase> handleSignatureException(SignatureException e) {
+	public ResponseEntity<ResponseBase<String>> handleSignatureException(SignatureException e) {
 		log.error("JWT 서명이 올바르지 않습니다." + e.getMessage());
 
 		ResponseBase<String> result = ResponseBase.<String>builder()
@@ -46,34 +48,18 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ResponseBase<String>> handleRuntimeException(RuntimeException e) {
-		log.error("런타임 에러" + e.getMessage());
-
 		ResponseBase<String> result = ResponseBase.<String>builder()
-						.status(500)
-						.message(e.getMessage())
+						.status(400)
+						.message("런타임 에러: " + e.getMessage())
 						.build();
 
-		return ResponseEntity.status(500)
-						.body(result);
-	}
-
-	//정의한 예외 이외는 Exception으로 처리
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ResponseBase<String>> othersHandle(Exception e) {
-		log.error("예기치 못한 에러 발생" + e.getMessage());
-
-		ResponseBase<String> result = ResponseBase.<String>builder()
-						.status(500)
-						.message("서버에러 발생")
-						.build();
-
-		return ResponseEntity.status(500)
+		return ResponseEntity.status(400)
 						.body(result);
 	}
 
 	// 유효성 검사 실패 예외 처리 (@Valid, @Validated)
 	@ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class, HandlerMethodValidationException.class})
-	public ResponseEntity<ResponseBase<String>> handleValidationException(MethodArgumentNotValidException e) {
+	public ResponseEntity<ResponseBase<String>> handleValidationException(BindException e) {
 		String errorMessage = e.getBindingResult()
 						.getAllErrors()
 						.stream()
@@ -88,6 +74,18 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(400).body(response);
 	}
 
+	// 유효성 검사 실패 예외 처리 (@Valid, @Validated 외)
+	@ExceptionHandler({TypeMismatchException.class, IllegalArgumentException.class})
+	public ResponseEntity<ResponseBase<String>> handleValidationETCException(Exception e) {
+		ResponseBase<String> result = ResponseBase.<String>builder()
+						.status(400)
+						.message("유효성 검사 실패: " + e.getMessage())
+						.build();
+
+		return ResponseEntity.status(400)
+						.body(result);
+	}
+
 	// DB 에러 핸들러
 	@ExceptionHandler(SQLException.class)
 	public ResponseEntity<ResponseBase<String>> sqlException(SQLException e) {
@@ -96,6 +94,20 @@ public class GlobalExceptionHandler {
 		ResponseBase<String> result = ResponseBase.<String>builder()
 						.status(500)
 						.message("DB에러 발생")
+						.build();
+
+		return ResponseEntity.status(500)
+						.body(result);
+	}
+
+	//정의한 예외 이외는 Exception으로 처리
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ResponseBase<String>> othersHandle(Exception e) {
+		log.error("예기치 못한 에러 발생" + e.getMessage());
+
+		ResponseBase<String> result = ResponseBase.<String>builder()
+						.status(500)
+						.message("서버에러 발생")
 						.build();
 
 		return ResponseEntity.status(500)

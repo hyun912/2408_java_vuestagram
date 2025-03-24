@@ -3,6 +3,7 @@ package com.example.vuestagram.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,6 +18,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 	private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
+	// 인증 없이 요청 가능한 리스트
+	private final String[] getPermitList = {
+					"/api/reissue-token"
+					,"/api/boards"
+					,"/api/boards/{boardId}"
+	};
+	private final String[] postPermitList = {
+					"/api/login"
+					,"/api/registration"
+	};
+
 	@Bean
 	// 비밀번호 암호화 관련 구현체 정의 및 빈등록
 	public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
@@ -29,7 +41,8 @@ public class SecurityConfiguration {
 						.csrf(csrf -> csrf.disable()) // SSR이 아니므로 CSRF 토큰 인증 비활성 설정
 						.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 인가 처리 전 스프링 시큐리 인증 필터 실행
 						.authorizeHttpRequests(request -> // 리퀘스트에 대한 인가 체크 처리
-										request.requestMatchers("/api/login").permitAll() // `/api/login`은 인가 없이 접근 가능
+										request.requestMatchers(HttpMethod.GET ,this.getPermitList).permitAll() // HTTP Method가 GET인 getPermitList의 요청은 인가 없이 접근 가능
+														.requestMatchers(HttpMethod.POST ,this.postPermitList).permitAll() // HTTP Method가 Post인 postPermitList의 요청은 인가 없이 접근 가능
 														.anyRequest().authenticated() // 위에서 정의한 것들 이 외에는 인가 필요
 						)
 						.build();
