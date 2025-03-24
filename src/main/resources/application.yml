@@ -25,6 +25,13 @@ spring:
       mode: never
       platform: all
 
+# Sjf4j 설정
+logging:
+  file:
+    name: classpath:logs/app.log
+  level:
+    root: info
+
 # yml은 카멜이 적용안됨
 config:
   jwt:
@@ -38,10 +45,7 @@ config:
     header-key: Authorization
     scheme: Bearer
     reiss-uri: /api/reissue-token
-
-# Sjf4j 설정
-logging:
   file:
-    name: classpath:logs/app.log
-  level:
-    root: info
+    real-file-path: C:/Users/kim37/AppData/Projects/Aworkspace/vuestagram/src/main # 절대 경로로 지정
+    profile-path: /img/profile # 상대 경로로 지정, 저장 처리 코드에서 real-file-path를 연결하여 사용하는 식
+    board-img-path: /img/boards # 상대 경로로 지정, 저장 처리 코드에서 real-file-path를 연결하여 사용하는 식

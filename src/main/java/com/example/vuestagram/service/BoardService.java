@@ -76,7 +76,7 @@ public class BoardService {
 		board.setContent(requestBoardStore.getContent());
 		board.setUser(user); // Relation을 맺어뒀으므로 위에서 가져온 작성유저 엔티티를 사용
 		board.setImg(imgPath);
-		board.setLikes(0);
+		board.setLike(0);
 		boardRepogitory.save(board);
 
 		try {
